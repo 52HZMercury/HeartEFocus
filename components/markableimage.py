@@ -10,7 +10,7 @@ class MarkableImage(QGraphicsView):
     def __init__(self, image_path='/Users/xiangyang/PycharmProjects/medai/resources/01737_0.jpg', parent=None):
         super(MarkableImage, self).__init__(parent)
         self.setScene(QGraphicsScene(self))
-        self.setSceneRect(0, 0, 800, 600)  # 设置场景大小
+        self.setSceneRect(0, 0, 800, 1200)  # 设置场景大小
         self.setRenderHint(QPainter.Antialiasing)
         self.lastPos = QPoint()  # 记录上一个点的位置
         self.pen = QPen(QColor(240, 190, 80), 4, Qt.SolidLine)  # 画笔设置

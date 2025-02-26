@@ -20,22 +20,23 @@ if __name__ == '__main__':
     #                     stylesheet)
 
     stylesheet += """
+    
     QPushButton {
-        background-color: #444444;  /* 深灰色背景 */
-        color: #FFFFFF;  /* 白色文本 */
-        border: 1px solid #555555;  /* 边框颜色 */
+        background-color: #DCDDDF;  /* 灰色背景 */
+        color: #444444;  /* 白色文本 */
+        border: 1px solid #D9D9D9;  /* 边框颜色 */
         padding: 5px;
         border-radius: 5px;  /* 圆角边框 */
-        font-size: 14px;  /* 字体大小 */
+        font-size: 20px;  /* 字体大小 */
     }
 
     QPushButton:hover {
-        background-color: #555555;  /* 悬停时背景色变为稍亮的灰色 */
+        background-color: #B5B5B6;  /* 悬停时背景色变为稍亮的灰色 */
         border-color: #777777;  /* 边框颜色变亮 */
     }
 
     QPushButton:pressed {
-        background-color: #007bff;  /* 按下时背景色变为蓝色 */
+        background-color: #8B8B8C;  /* 按下时背景色变为深灰色 */
         color: #FFFFFF;  /* 保持文本白色 */
         border-color: #004085;  /* 边框颜色变为蓝色 */
     }
@@ -45,16 +46,14 @@ if __name__ == '__main__':
 
     window = QWidget()
 
-
     layout = SandwichLayout()
     window.setLayout(layout)
-    window.setWindowTitle('左心室分割系统')
+    window.setWindowTitle('HeartEFocus')
     window.setWindowIcon(QIcon(home_path + "/resources/lightblue/huabankaobei.svg"))
 
     tab_view = TabView(layout.get_mid_layout())
+    # tab_view = TabView(layout.get_mid_layout(), font_size=10)
     tab_view.add_tab("主页", HomePage(tab_view), closeable=False, icon=QIcon(home_path + "/resources/white/home.svg"))
-
-
 
     layout.get_top_layout().addWidget(tab_view)
     # layout().addWidget(FileTreeView())

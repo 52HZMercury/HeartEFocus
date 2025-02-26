@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QB
     QScrollArea
 
 from components.buttons import NestedButton
-
+from PySide6.QtGui import QFont  # 新增导入
 
 class TabView(QWidget):
     tab_added = Signal(int)
@@ -21,7 +21,9 @@ class TabView(QWidget):
         :param widgets_layout: If True, create a new QHBoxLayout for the buttons. If a QBoxLayout is provided, use it. If False, don't create a buttons layout.
         :param parent: The parent widget.
         """
+
         super().__init__(parent)
+
         self.main_layout = QVBoxLayout(self)
 
         self.buttons = []
@@ -142,7 +144,7 @@ class TabView(QWidget):
         return self.buttons.index(button)
 
     def create_button(self, text, closeable, icon=None):
-        button_width = 40
+        button_width = 90
         for t in text:
             if ord(t) > 127:
                 button_width += 20
@@ -153,6 +155,8 @@ class TabView(QWidget):
             icon = QFileIconProvider().icon(QFileIconProvider.File)
         button = NestedButton(icon=icon, text=text, parent=self)
         button.setFixedWidth(button_width)
+
+
         button.clicked.connect(lambda: self.change_tab(self.get_button_index(button)))
         if closeable:
             close_button = QPushButton(icon=QIcon("resources/close.svg"), text="", parent=self)
