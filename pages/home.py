@@ -28,27 +28,30 @@ class HomePage(QWidget):
         gonggao_path = home_path + "/resources/white/gonggao.svg"
 
         # 心室勾画 室壁勾画 计算射血分数
-        self.button0 = QPushButton('  心室勾画')
-        self.button0.setMinimumHeight(100)
+        self.button0 = QPushButton(' 开始使用')
+        # 选择文件夹  todo
+
+        self.button0.setFixedHeight(100)
+        self.button0.setFixedWidth(300)
         self.button0.setIcon(QIcon(binglizhenduan_path))
         self.button0.setIconSize(QSize(40, 40))
         self.button0.clicked.connect(
-            lambda: self.tabview.add_tab('心室勾画', labelVentriclePage(), True, icon=QIcon(binglizhenduan_path)))
+            lambda: self.tabview.add_tab('心脏数据标注', labelVentriclePage(), True, icon=QIcon(binglizhenduan_path)))
 
-        self.button1 = QPushButton(text='  室壁勾画')
-        self.button1.setMinimumHeight(100)
-        self.button1.setIcon(QIcon(bingli_path))
-        self.button1.setIconSize(QSize(40, 40))
-        self.button1.clicked.connect(
-            lambda: self.tabview.add_tab('病历管理', BingliGuanliPage(), True, icon=QIcon(bingli_path)))
-
-
-        self.button2 = QPushButton('  射血分数计算')
-        self.button2.setMinimumHeight(100)
-        self.button2.setIcon(QIcon(binglizhenduan_path))
-        self.button2.setIconSize(QSize(40, 40))
-        self.button2.clicked.connect(
-            lambda: self.tabview.add_tab('射血分数', DashujuFenxiPage(), True, icon=QIcon(binglizhenduan_path)))
+        # self.button1 = QPushButton(text='  室壁勾画')
+        # self.button1.setMinimumHeight(100)
+        # self.button1.setIcon(QIcon(bingli_path))
+        # self.button1.setIconSize(QSize(40, 40))
+        # self.button1.clicked.connect(
+        #     lambda: self.tabview.add_tab('病历管理', BingliGuanliPage(), True, icon=QIcon(bingli_path)))
+        #
+        #
+        # self.button2 = QPushButton('  射血分数计算')
+        # self.button2.setMinimumHeight(100)
+        # self.button2.setIcon(QIcon(binglizhenduan_path))
+        # self.button2.setIconSize(QSize(40, 40))
+        # self.button2.clicked.connect(
+        #     lambda: self.tabview.add_tab('射血分数', DashujuFenxiPage(), True, icon=QIcon(binglizhenduan_path)))
 
         # self.button1 = QPushButton(text='  病历管理')
         # self.button1.setMinimumHeight(100)
@@ -113,8 +116,8 @@ class HomePage(QWidget):
 
         grid = AutoGridWidget()
         grid.add_widget(self.button0)
-        grid.add_widget(self.button1)
-        grid.add_widget(self.button2)
+        # grid.add_widget(self.button1)
+        # grid.add_widget(self.button2)
         # grid.add_widget(self.button3)
         # grid.add_widget(self.button4)
         # grid.add_widget(self.button5)
