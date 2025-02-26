@@ -1,0 +1,56 @@
+# Byte-compiled / optimized / DLL files
+*.py[cod]
+__pycache__/
+*.so
+
+.pkl
+.pth
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+*.egg-info/
+dist/
+build/
+
+# PyCharm
+.idea/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# Model checkpoints
+checkpoints/
+*.h5
+*.ckpt
+*.pt
+
+# Results and outputs
+results*/
+plots/
+predictions/
+logs/
+
+# Data files
+data/
+*.csv
+*.h5
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*.DS_Store
+
+# Ignore environment variables
+.env
