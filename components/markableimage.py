@@ -22,6 +22,12 @@ class MarkableImage(QGraphicsView):
         self.drawing = True
         self.dragging = False
 
+    def clear_image(self):
+        # 清空场景中的所有内容
+        self.scene().clear()
+        # 重置图片项为 None
+        self.pixmap_item = None
+
     def load_image(self, image_path):
         # 加载并显示一张图片
         pixmap = QPixmap(image_path)  # 创建一个QPixmap对象

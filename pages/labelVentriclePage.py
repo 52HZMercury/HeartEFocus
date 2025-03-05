@@ -6,8 +6,10 @@ from PySide6.QtWidgets import (
 # import torch
 # import onnxruntime
 import numpy as np
-import cv2
 import config
+
+import cv2
+from PySide6.QtGui import QImage
 from components.filetreeview import FileTreeView
 from components.layouts import WorkstationLayout
 from components.markableimage import MarkableImage
@@ -52,7 +54,7 @@ class ResultPage(QWidget):
 
 
 class labelVentriclePage(QWidget):
-    def __init__(self,base_folder):
+    def __init__(self, base_folder):
         super().__init__()
         self.layout = WorkstationLayout()
         self.setLayout(self.layout)
@@ -63,12 +65,30 @@ class labelVentriclePage(QWidget):
 
         # 创建 FileTreeView
         self.filetree = FileTreeView(self.base_folder)
+        # self.filetree = FileTreeView(config.work_dir)
         self.image_view = MarkableImage()
         self.image_view.setMinimumWidth(700)
 
-        # 添加布局
-        self.layout.get_mid_left_layout().addWidget(self.filetree)
-        self.layout.get_center_layout().addWidget(self.image_view)
+        # 视频相关初始化
+        self.cap = None
+        self.current_frame_index = 0
+        self.total_frames = 0
+
+        # 增加上一帧和下一帧按钮
+        self.prev_frame_button = QPushButton('上一帧')
+        self.next_frame_button = QPushButton('下一帧')
+        self.prev_frame_button.setEnabled(False)  # 默认禁用上一帧按钮
+        self.next_frame_button.setEnabled(False)  # 默认禁用下一帧按钮
+
+        # 绑定按钮事件
+        self.prev_frame_button.clicked.connect(self.show_previous_frame)
+        self.next_frame_button.clicked.connect(self.show_next_frame)
+
+        # 将按钮添加到布局
+        frame_buttons_layout = QHBoxLayout()
+        frame_buttons_layout.addWidget(self.prev_frame_button)
+        frame_buttons_layout.addWidget(self.next_frame_button)
+        self.layout.get_bottom_layout().addLayout(frame_buttons_layout)
 
 
         self.image_view = MarkableImage()
@@ -90,30 +110,21 @@ class labelVentriclePage(QWidget):
         self.mark_label.addWidget(self.clear_button)
         self.mark_label.addWidget(self.save_button)
 
-        # self.medical_record_tab.delete_button.hide()  # 隐藏删除按钮
-        # self.medical_record_tab.add_image.hide()  # 隐藏添加按钮
-        # self.medical_record_tab.create_button.hide()  # 隐藏创建按钮
-        # self.similar_record_tab.delete_button.hide()  # 隐藏删除按钮
-        # self.similar_record_tab.add_image.hide()  # 隐藏添加按钮
-        # self.similar_record_tab.create_button.hide()  # 隐藏创建按钮
-        # self.similar_record_tab.save_button.hide()  # 隐藏保存按钮
 
         # 信号连接
-        self.filetree.item_double_clicked.connect(self.select_image)
+        self.filetree.item_double_clicked.connect(self.select_video)
+        # 信号连接
+        # self.filetree.item_double_clicked.connect(self.select_image)
 
-        # self.filetree.item_double_clicked.connect(self.medical_record_tab.load_record)
-        # self.DiagnosisPage.diagnosis_button.clicked.connect(self.handle_diagnosis_request)  # 连接诊断按钮
-        # self.DiagnosisPage.segment_button.clicked.connect(self.handle_segment_request)  # 连接分割按钮
-        # self.DiagnosisPage.report_button.clicked.connect(self.handle_report_request)  # 连接报告生成按钮
-        # self.DiagnosisPage.similar_case_button.clicked.connect(self.handle_case_request)  # 连接相似病例按钮
 
         # 添加layout到主界面
         self.layout.get_mid_left_layout().addWidget(self.filetree)
-        # self.layout.get_mid_right_layout().addWidget(self.medical_record_tab)
         self.layout.get_mid_right_layout().addWidget(self.ResultPage)
         self.layout.get_center_layout().addWidget(self.image_view)
         self.layout.get_center_layout().addLayout(self.mark_label)
-        self.layout.get_bottom_layout().addWidget(self.DiagnosisPage)
+
+        # self.layout.get_mid_right_layout().addWidget(self.medical_record_tab)
+        # self.layout.get_bottom_layout().addWidget(self.DiagnosisPage)
         self.current_path = None
 
         # self.medical_record_tab.setMaximumWidth(300)
@@ -123,6 +134,72 @@ class labelVentriclePage(QWidget):
     def select_image(self, path):
         self.current_path = path
         self.image_view.load_image(path)
+
+    def select_video(self, filename):
+
+        """读取视频并显示第一帧"""
+        path =  self.base_folder +'/' +filename
+        print(f"Attempting to open video at: {path}")  # 查看控制台输出路径是否正确
+
+        if self.cap:
+            self.cap.release()  # 释放之前的视频捕获对象
+
+        self.cap = cv2.VideoCapture(path)
+        if not self.cap.isOpened():
+            print(f"无法打开视频文件: {path}")
+            return
+
+        # 重置帧索引和按钮状态
+        self.total_frames = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        self.current_frame_index = 0
+        self.prev_frame_button.setEnabled(False)
+        self.next_frame_button.setEnabled(self.total_frames > 1)
+        # 清空 image_view 的内容
+        self.image_view.clear_image()  # 假设 MarkableImage 类有 clear_image 方法
+
+        # 显示第一帧
+        self.show_frame(self.current_frame_index)
+        self.total_frames = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        self.current_frame_index = 0
+
+        # 清空 image_view 的内容
+        # self.image_view.clear_image()
+
+        self.show_frame(self.current_frame_index)
+
+        # 启用/禁用按钮
+        self.prev_frame_button.setEnabled(False)
+        self.next_frame_button.setEnabled(self.total_frames > 1)
+
+    def show_frame(self, frame_index):
+        """显示指定帧"""
+        if self.cap:
+            self.cap.set(cv2.CAP_PROP_POS_FRAMES, frame_index)
+            ret, frame = self.cap.read()
+            if ret:
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                height, width, channel = frame.shape
+                bytes_per_line = 3 * width
+                q_image = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
+                self.image_view.load_image(q_image)
+
+    def show_previous_frame(self):
+        """显示上一帧"""
+        if self.current_frame_index > 0:
+            self.current_frame_index -= 1
+            self.show_frame(self.current_frame_index)
+            self.next_frame_button.setEnabled(True)
+            if self.current_frame_index == 0:
+                self.prev_frame_button.setEnabled(False)
+
+    def show_next_frame(self):
+        """显示下一帧"""
+        if self.current_frame_index < self.total_frames - 1:
+            self.current_frame_index += 1
+            self.show_frame(self.current_frame_index)
+            self.prev_frame_button.setEnabled(True)
+            if self.current_frame_index == self.total_frames - 1:
+                self.next_frame_button.setEnabled(False)
     def handle_save_label(self):
         pass
 

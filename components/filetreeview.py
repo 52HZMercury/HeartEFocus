@@ -119,11 +119,21 @@ class FileTreeView(QWidget):
                 child = item.child(i)
                 self.filter_item(child, search_text)
 
+    # def tree_view_double_click(self, index):
+    #     item = self.treeview.itemFromIndex(index)
+    #     if item and item.text(1):
+    #         file_path = pathlib.Path(item.text(1))
+    #         if file_path.is_file():
+    #             self.item_double_clicked.emit(str(file_path))  # 确保这里传递的是绝对路径
+
     def tree_view_double_click(self, index):
+        print("Double click detected!")
         item = self.treeview.currentItem()
-        print(item.text(1))
-        self.item_double_clicked.emit(item.text(1))
-        return item.text(1)
+        if item:
+            print(f"Item text: {item.text(0)}")
+            self.item_double_clicked.emit(item.text(0))
+        else:
+            print("No item selected!")
 
     def reload(self):
         self.treeview.clear()
