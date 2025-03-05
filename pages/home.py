@@ -16,7 +16,7 @@ from pages.zhinengzhenduan_page import ZhinengZhenduanPage
 from pages.dashujufenxi_page import DashujuFenxiPage
 
 home_path = os.path.dirname(sys.argv[0])
-labelVentricleIcon = home_path + "/resources/white/chaoshengzhenduanyi.svg"
+labelVentricleIcon = home_path + "/resources/white/labelVentricleIcon.svg"
 
 class HomePage(QWidget):
     def __init__(self, tabview: TabView, parent=None):
