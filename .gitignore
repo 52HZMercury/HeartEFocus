@@ -54,3 +54,11 @@ data/
 
 # Ignore environment variables
 .env
+./pages/bingliguanli_page.py
+./pages/dashujufenxi_page.py
+./pages/huifang_page.py
+./pages/peixunxitong_page.py
+./pages/shishizhinengjiance_page.py
+./pages/tongyongzhenduan_page.py
+./pages/xiaoxizhongxin_page.py
+./pages/zhinengzhenduan_page.py
