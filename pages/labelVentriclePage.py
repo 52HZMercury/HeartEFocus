@@ -78,10 +78,10 @@ class labelVentriclePage(QWidget):
         self.frame_info_label = QLabel("当前帧: 0 / 总帧数: 0")
         self.frame_info_label.setAlignment(Qt.AlignCenter)  # 居中对齐
 
-        # 增加 首帧 上一帧 下一帧 末帧 按钮
+        # 增加 首帧 向前跳转 向后跳转 末帧 按钮
         self.first_frame_button = QPushButton('首帧')
-        self.prev_frame_button = QPushButton('上一帧')
-        self.next_frame_button = QPushButton('下一帧')
+        self.prev_frame_button = QPushButton('向前跳转')
+        self.next_frame_button = QPushButton('向后跳转')
         self.last_frame_button = QPushButton('末帧')
         self.first_frame_button.setEnabled(False)  # 默认禁用首帧按钮
         self.prev_frame_button.setEnabled(False)  # 默认禁用上一帧按钮
@@ -94,12 +94,18 @@ class labelVentriclePage(QWidget):
         self.next_frame_button.clicked.connect(self.show_next_frame)
         self.last_frame_button.clicked.connect(self.show_last_frame)
 
+        # 新增跳转间隔输入框
+        self.jump_interval_input = QLineEdit()
+        self.jump_interval_input.setPlaceholderText("跳转间隔")
+        self.jump_interval_input.setMaximumWidth(80)  # 设置输入框宽度
+
         # 将按钮添加到布局
         frame_buttons_layout = QHBoxLayout()
         frame_buttons_layout.addWidget(self.first_frame_button)  # 插入到第一个位置
         frame_buttons_layout.addWidget(self.prev_frame_button)
         frame_buttons_layout.addWidget(self.next_frame_button)
         frame_buttons_layout.addWidget(self.last_frame_button)
+        frame_buttons_layout.addWidget(self.jump_interval_input)  # 添加跳转间隔输入框到布局
 
         frame_buttons_layout.addWidget(self.frame_info_label)  # 添加帧信息标签
         self.layout.get_bottom_layout().addLayout(frame_buttons_layout)
@@ -198,6 +204,16 @@ class labelVentriclePage(QWidget):
         # 更新按钮状态
         self.update_button_states()
 
+    def get_jump_interval(self):
+        """获取并验证跳转间隔"""
+        try:
+            interval = int(self.jump_interval_input.text())
+            if interval > 0:
+                return interval
+        except ValueError:
+            pass
+        return 1  # 默认间隔为1
+
     def show_first_frame(self):
         """跳转到视频的第一帧"""
         if self.current_frame_index == 0:
@@ -236,13 +252,14 @@ class labelVentriclePage(QWidget):
 
 
     def show_previous_frame(self):
-        """显示上一帧"""
+        """显示上一帧，支持自定义跳转间隔"""
+        interval = self.get_jump_interval()  # 获取跳转间隔
         if self.current_frame_index > 0:
             # 清除当前帧的标记点
             self.image_view.clear_circles()
 
-            # 更新帧索引
-            self.current_frame_index -= 1
+            # 更新帧索引，确保不小于0
+            self.current_frame_index = max(0, self.current_frame_index - interval)
             self.show_frame(self.current_frame_index)
 
             # 更新帧信息标签
@@ -252,13 +269,14 @@ class labelVentriclePage(QWidget):
             self.update_button_states()
 
     def show_next_frame(self):
-        """显示下一帧"""
+        """显示下一帧，支持自定义跳转间隔"""
+        interval = self.get_jump_interval()  # 获取跳转间隔
         if self.current_frame_index < self.total_frames - 1:
             # 清除当前帧的标记点
             self.image_view.clear_circles()
 
-            # 更新帧索引
-            self.current_frame_index += 1
+            # 更新帧索引，确保不超过总帧数
+            self.current_frame_index = min(self.total_frames - 1, self.current_frame_index + interval)
             self.show_frame(self.current_frame_index)
 
             # 更新帧信息标签
