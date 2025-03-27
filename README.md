@@ -14,4 +14,5 @@ This is an annotation software modeled after the Echo-Dynamic dataset. The prima
 2. select data directory
 3. double click on the video file you want to open
 4. click on the video to select the target
-5. export the result to csv
+5. Save Target Labels
+6. export the result to csv
