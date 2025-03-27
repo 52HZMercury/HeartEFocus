@@ -89,7 +89,8 @@ class FileTreeView(QWidget):
             for file in files:
                 all_files.append(os.path.join(root, file))
 
-        return natsorted(all_files)
+        # 使用 sorted 进行字典排序
+        return sorted(all_files)
 
     def read_dir_add_to_tree(self, folder):
         for file in self.all_files(folder):

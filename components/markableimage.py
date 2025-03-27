@@ -1,13 +1,13 @@
 import sys
 
 from PySide6.QtCore import Qt, QPoint, QLineF
-from PySide6.QtGui import QPen, QColor, QPainter, QPixmap, QMouseEvent
-from PySide6.QtWidgets import QApplication, QGraphicsView, QGraphicsScene, QMainWindow, QGraphicsPixmapItem, \
+from PySide6.QtGui import QImage, QPen, QColor, QPainter, QPixmap, QMouseEvent
+from PySide6.QtWidgets import  QApplication, QGraphicsView, QGraphicsScene, QMainWindow, QGraphicsPixmapItem, \
     QGraphicsEllipseItem
 
 
 class MarkableImage(QGraphicsView):
-    def __init__(self, image_path='/Users/xiangyang/PycharmProjects/medai/resources/01737_0.jpg', parent=None):
+    def __init__(self, image_path='../resources/01737_0.jpg', parent=None):
         super(MarkableImage, self).__init__(parent)
         self.setScene(QGraphicsScene(self))
         self.setSceneRect(0, 0, 800, 1200)  # 设置场景大小
@@ -33,21 +33,33 @@ class MarkableImage(QGraphicsView):
         self.selected_circle = None
 
     def load_image(self, image_path):
-        # 加载并显示一张图片
-        pixmap = QPixmap(image_path)  # 创建一个QPixmap对象
-        self.pixmap_item = QGraphicsPixmapItem(pixmap)  # 用图片创建QGraphicsPixmapItem
-        self.pixmap_item.setPos(0, 0)  # 设置图片的位置
-        self.scene().addItem(self.pixmap_item)  # 将图片项添加到场景中
-        self.update_image()
+        # 如果传入的是 QImage 对象，则直接使用
+        if isinstance(image_path, QImage):
+            pixmap = QPixmap.fromImage(image_path)
+        else:
+            pixmap = QPixmap(image_path)  # 创建一个 QPixmap 对象
 
-    def update_image(self):
+        # 清空场景内容
+        self.scene().clear()
+
+        # 设置图片项
+        self.pixmap_item = QGraphicsPixmapItem(pixmap)
+        self.pixmap_item.setPos(0, 0)  # 设置图片的位置为左上角
+        self.scene().addItem(self.pixmap_item)
+
+        # 动态调整场景大小
         self.setSceneRect(self.pixmap_item.boundingRect())  # 适应场景大小
         self.fitInView(self.pixmap_item, Qt.KeepAspectRatio)  # 确保图片适应视图
 
     def resizeEvent(self, event):
-        # 重写resizeEvent方法，使场景的大小随着视图的大小变化而变化
+        # 重写 resizeEvent 方法，使场景的大小随着视图的大小变化而变化
         self.update_image()
         super(MarkableImage, self).resizeEvent(event)
+
+    def update_image(self):
+        if self.pixmap_item:
+            self.setSceneRect(self.pixmap_item.boundingRect())  # 适应场景大小
+            self.fitInView(self.pixmap_item, Qt.KeepAspectRatio)  # 确保图片适应视图
 
     def select_one_circle(self, circle):
         # 选中一个圆圈
@@ -66,7 +78,16 @@ class MarkableImage(QGraphicsView):
             self.selected_circle = None
 
     def mousePressEvent(self, event: QMouseEvent):
+        # 将鼠标点击位置转换为场景坐标
         mouse_in_scene = self.mapToScene(event.pos())
+
+        # 获取当前场景的边界
+        scene_rect = self.scene().sceneRect()
+
+        # 检查鼠标点击位置是否在场景范围内
+        if not scene_rect.contains(mouse_in_scene):
+            print("点击位置超出视频帧范围，忽略该点击")
+            return
 
         if not self.drawing:
             for circle in self.circles:
@@ -87,14 +108,12 @@ class MarkableImage(QGraphicsView):
                 break
         else:
             self.clear_selected_circle()
-            # if event.button() == Qt.LeftButton:
             # 创建一个新的圆圈标记
             circle = QGraphicsEllipseItem(0, 0, 5, 5)  # 调整大小
             # 设置圆圈的颜色和透明度
             circle.setBrush(QColor(240, 190, 80, 120))
             circle.setPen(QPen(QColor(240, 190, 80), 1, Qt.SolidLine))  # 调整画笔宽度
 
-            mouse_in_scene = self.mapToScene(event.pos())
             circle.setPos(mouse_in_scene - QPoint(2.5, 2.5))  # 调整偏移量
             self.scene().addItem(circle)
             self.select_one_circle(circle)
@@ -192,19 +211,19 @@ class MarkableImage(QGraphicsView):
         return positions
 
 
-if __name__ == '__main__':
-    # 主窗口
-    class MainWindow(QMainWindow):
-        def __init__(self):
-            super(MainWindow, self).__init__()
-            self.mark_label = MarkableImage(image_path='/Users/xiangyang/PycharmProjects/medai/resources/01737_0.jpg',
-                                            parent=self)
-            self.mark_label.import_circles([(100, 100), (100, 200), (200, 200), (200, 100)])
-            self.setGeometry(100, 100, 1000, 600)
-            self.setCentralWidget(self.mark_label)
+# if __name__ == '__main__':
+#     # 主窗口
+#     class MainWindow(QMainWindow):
+#         def __init__(self):
+#             super(MainWindow, self).__init__()
+#             self.mark_label = MarkableImage(image_path='/Users/xiangyang/PycharmProjects/medai/resources/01737_0.jpg',
+#                                             parent=self)
+#             self.mark_label.import_circles([(100, 100), (100, 200), (200, 200), (200, 100)])
+#             self.setGeometry(100, 100, 1000, 600)
+#             self.setCentralWidget(self.mark_label)
 
 
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
+#     app = QApplication(sys.argv)
+#     window = MainWindow()
+#     window.show()
+    # sys.exit(app.exec())

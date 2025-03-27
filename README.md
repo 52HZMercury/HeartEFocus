@@ -8,6 +8,7 @@ This is an annotation software modeled after the Echo-Dynamic dataset. The prima
 - Python 3.7+
 - PySide6 6.5.2
 - qtvscodestyle 0.1.1
+- natsort
 ## Use
 1. start main.py
 2. select data directory
