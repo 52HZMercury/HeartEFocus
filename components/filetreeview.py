@@ -31,18 +31,20 @@ class FileTreeView(QWidget):
         # self.treeview.customContextMenuRequested.connect(self.show_menu)
 
         self.expand_all_button = QPushButton("展开")
-        self.expand_all_button.clicked.connect(self.treeview.expandAll)
         self.collapse_all_button = QPushButton("收起")
-        self.collapse_all_button.clicked.connect(self.treeview.collapseAll)
         self.reload_button = QPushButton("刷新")
+
+        self.expand_all_button.clicked.connect(self.treeview.expandAll)
+        self.collapse_all_button.clicked.connect(self.treeview.collapseAll)
         self.reload_button.clicked.connect(self.reload)
 
         layout = QVBoxLayout()
         layout.addWidget(self.search)
         layout.addWidget(self.treeview, 1)
         layout2 = QHBoxLayout()
-        layout2.addWidget(self.expand_all_button)
-        layout2.addWidget(self.collapse_all_button)
+
+        # layout2.addWidget(self.expand_all_button)
+        # layout2.addWidget(self.collapse_all_button)
         layout2.addWidget(self.reload_button)
         layout.addLayout(layout2)
         self.setLayout(layout)
