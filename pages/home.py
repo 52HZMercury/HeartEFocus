@@ -8,12 +8,12 @@ from components.tabview import TabView
 from pages.labelVentriclePage import labelVentriclePage
 from PySide6.QtWidgets import QFileDialog  # 导入 QFileDialog
 
-from pages.bingliguanli_page import BingliGuanliPage
-from pages.huifang_page import HuiFangPage
-from pages.shishizhinengjiance_page import ShishiZhiNengJiancePage
-from pages.xiaoxizhongxin_page import ChatWindow
-from pages.zhinengzhenduan_page import ZhinengZhenduanPage
-from pages.dashujufenxi_page import DashujuFenxiPage
+# from pages.bingliguanli_page import BingliGuanliPage
+from pages.followUpPage import HuiFangPage
+from pages.HealthMonitorPage import ShishiZhiNengJiancePage
+from pages.messageCenterPage import ChatWindow
+from pages.intelligentDiagnosisPage import ZhinengZhenduanPage
+from pages.dataAnalysisPage import DashujuFenxiPage
 
 home_path = os.path.dirname(sys.argv[0])
 labelVentricleIcon = home_path + "/resources/white/labelVentricleIcon.svg"

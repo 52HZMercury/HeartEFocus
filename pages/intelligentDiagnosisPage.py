@@ -11,7 +11,7 @@ import config
 from components.filetreeview import FileTreeView
 from components.layouts import WorkstationLayout
 from components.markableimage import MarkableImage
-from pages.bingliguanli_page import MedicalRecordTab
+from pages.medicalRecordPage import MedicalRecordTab
 
 
 class DiagnosisPage(QWidget):
@@ -195,7 +195,7 @@ class ZhinengZhenduanPage(QWidget):
 所见:
         超声可见:左侧乳腺9点钟位，距乳头旁探及大小约1.8*1.0*1.3cm低回声结节，边缘光整，形态不规则。
         造影可见:呈不均匀低增强，较二维未见增大，周围未见蟹足样粗大滋养血管，结节于58s慢于周围腺体消退，呈不均匀等增强。
-        
+
 结论:
         左侧乳腺9点钟乳头旁低回声结节，考虑导管内乳头状肿瘤可能，BI-ADS3类结节性乳腺癌。
             """

@@ -14,7 +14,7 @@ import config
 from components.filetreeview import FileTreeView
 from components.layouts import WorkstationLayout, AutoGridWidget
 from components.markableimage import MarkableImage
-from pages.bingliguanli_page import MedicalRecordTab
+from pages.medicalRecordPage import MedicalRecordTab
 
 
 class HuiFangPage(QWidget):

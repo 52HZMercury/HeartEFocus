@@ -12,7 +12,7 @@ from PySide6.QtGui import QImage
 from components.filetreeview import FileTreeView
 from components.layouts import WorkstationLayout
 from components.markableimage import MarkableImage
-from pages.bingliguanli_page import MedicalRecordTab
+# from pages.bingliguanli_page import MedicalRecordTab
 
 
 # class DiagnosisPage(QWidget):
@@ -78,24 +78,29 @@ class labelVentriclePage(QWidget):
         self.frame_info_label = QLabel("当前帧: 0 / 总帧数: 0")
         self.frame_info_label.setAlignment(Qt.AlignCenter)  # 居中对齐
 
-        # 增加 首帧 上一帧 下一帧按钮
+        # 增加 首帧 上一帧 下一帧 末帧 按钮
         self.first_frame_button = QPushButton('首帧')
         self.prev_frame_button = QPushButton('上一帧')
         self.next_frame_button = QPushButton('下一帧')
+        self.last_frame_button = QPushButton('末帧')
         self.first_frame_button.setEnabled(False)  # 默认禁用首帧按钮
         self.prev_frame_button.setEnabled(False)  # 默认禁用上一帧按钮
         self.next_frame_button.setEnabled(False)  # 默认禁用下一帧按钮
+        self.last_frame_button.setEnabled(False)  # 默认禁用末帧按钮
 
         # 绑定按钮事件
         self.first_frame_button.clicked.connect(self.show_first_frame)
         self.prev_frame_button.clicked.connect(self.show_previous_frame)
         self.next_frame_button.clicked.connect(self.show_next_frame)
+        self.last_frame_button.clicked.connect(self.show_last_frame)
 
         # 将按钮添加到布局
         frame_buttons_layout = QHBoxLayout()
         frame_buttons_layout.addWidget(self.first_frame_button)  # 插入到第一个位置
         frame_buttons_layout.addWidget(self.prev_frame_button)
         frame_buttons_layout.addWidget(self.next_frame_button)
+        frame_buttons_layout.addWidget(self.last_frame_button)
+
         frame_buttons_layout.addWidget(self.frame_info_label)  # 添加帧信息标签
         self.layout.get_bottom_layout().addLayout(frame_buttons_layout)
 
@@ -104,8 +109,6 @@ class labelVentriclePage(QWidget):
         self.image_view.setMinimumWidth(700)
 
         self.similar_image_view = MarkableImage()
-        # self.medical_record_tab = MedicalRecordTab()
-        # self.similar_record_tab = MedicalRecordTab()
         # self.DiagnosisPage = DiagnosisPage()
         self.ResultPage = ResultPage()
         self.mark_label = QHBoxLayout()
@@ -173,10 +176,8 @@ class labelVentriclePage(QWidget):
         # 显示第一帧
         self.show_frame(self.current_frame_index)
 
-        # 启用/禁用按钮
-        self.first_frame_button.setEnabled(False)  # 禁用“首帧”按钮
-        self.prev_frame_button.setEnabled(False)  # 禁用“上一帧”按钮
-        self.next_frame_button.setEnabled(self.total_frames > 1)  # 根据总帧数决定是否启用“下一帧”按钮
+        # 更新按钮状态
+        self.update_button_states()
 
 
     def show_frame(self, frame_index):
@@ -193,6 +194,10 @@ class labelVentriclePage(QWidget):
                 # 动态调整 MarkableImage 的场景大小
                 self.image_view.setSceneRect(0, 0, width, height)  # 设置场景大小为视频帧大小
                 self.image_view.load_image(q_image)  # 加载图像
+
+        # 更新按钮状态
+        self.update_button_states()
+
     def show_first_frame(self):
         """跳转到视频的第一帧"""
         if self.current_frame_index == 0:
@@ -208,10 +213,28 @@ class labelVentriclePage(QWidget):
         # 更新帧信息标签
         self.update_frame_info()
 
-        # 禁用“首帧”按钮
-        self.first_frame_button.setEnabled(False)
-        self.prev_frame_button.setEnabled(False)  # 禁用“上一帧”按钮
-        self.next_frame_button.setEnabled(True)  # 启用“下一帧”按钮
+        # 更新按钮状态
+        self.update_button_states()
+
+    def show_last_frame(self):
+        """跳转到视频的最后一帧"""
+        if self.current_frame_index == self.total_frames - 1:
+            return  # 如果已经在最后一帧，则无需操作
+
+        # 清除当前帧的标记点
+        self.image_view.clear_circles()
+
+        # 更新帧索引
+        self.current_frame_index = self.total_frames - 1
+        self.show_frame(self.current_frame_index)
+
+        # 更新帧信息标签
+        self.update_frame_info()
+
+        # 更新按钮状态
+        self.update_button_states()
+
+
     def show_previous_frame(self):
         """显示上一帧"""
         if self.current_frame_index > 0:
@@ -225,14 +248,8 @@ class labelVentriclePage(QWidget):
             # 更新帧信息标签
             self.update_frame_info()
 
-            # 启用/禁用按钮
-            self.next_frame_button.setEnabled(True)
-            if self.current_frame_index == 0:
-                self.prev_frame_button.setEnabled(False)
-                self.first_frame_button.setEnabled(False)  # 禁用“首帧”按钮
-            else:
-                self.prev_frame_button.setEnabled(True)
-                self.first_frame_button.setEnabled(True)  # 启用“首帧”按钮
+            # 更新按钮状态
+            self.update_button_states()
 
     def show_next_frame(self):
         """显示下一帧"""
@@ -247,11 +264,21 @@ class labelVentriclePage(QWidget):
             # 更新帧信息标签
             self.update_frame_info()
 
-            # 启用/禁用按钮
-            self.prev_frame_button.setEnabled(True)
-            self.first_frame_button.setEnabled(True)  # 启用“首帧”按钮
-            if self.current_frame_index == self.total_frames - 1:
-                self.next_frame_button.setEnabled(False)
+            # 更新按钮状态
+            self.update_button_states()
+
+    def update_button_states(self):
+        """根据当前帧索引更新按钮状态"""
+        is_first_frame = self.current_frame_index == 0
+        is_last_frame = self.current_frame_index == self.total_frames - 1
+
+        # 更新按钮状态
+        self.first_frame_button.setEnabled(not is_first_frame)
+        self.prev_frame_button.setEnabled(not is_first_frame)
+        self.next_frame_button.setEnabled(not is_last_frame)
+        self.last_frame_button.setEnabled(not is_last_frame)
+
+
     def update_frame_info(self):
             """更新帧信息标签"""
             self.frame_info_label.setText(f"当前帧: {self.current_frame_index} / 总帧数: {self.total_frames - 1}")
